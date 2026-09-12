@@ -1,7 +1,5 @@
-# PAH Studio
-
 <p align="center">
-  <img src="./images/Baner.png" alt="PAH Studio Banner" width="100%" />
+  <img src="./images/Banner.png" alt="PAH Studio Banner" width="100%" />
 </p>
 
 <p align="center">
