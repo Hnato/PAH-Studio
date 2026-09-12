@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./images/Banner.png" alt="PAH Studio Banner" width="100%" />
+  <img src="images/baner.png" alt="PAH Studio Banner" width="100%" />
 </p>
 
 <p align="center">
