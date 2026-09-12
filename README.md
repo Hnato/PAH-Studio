@@ -15,7 +15,6 @@
   <img src="https://img.shields.io/badge/JavaScript-Vanilla-F7DF1E?style=for-the-badge&logo=javascript&logoColor=111" alt="Vanilla JavaScript" />
   <img src="https://img.shields.io/badge/SQLite-Database-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite" />
   <img src="https://img.shields.io/badge/Windows-Desktop_App-0078D6?style=for-the-badge&logo=windows&logoColor=white" alt="Windows App" />
-  <img src="https://img.shields.io/badge/Pixel%20Art-Animation-FF7A00?style=for-the-badge" alt="Pixel Art Animation" />
 </p>
 
 ---
