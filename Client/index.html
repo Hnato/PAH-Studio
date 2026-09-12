@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PAH Studio</title>
+    <meta name="description" content="Twórz grafiki pixel art i animacje poklatkowe z biblioteką .pah i społecznością.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" href="PAH.png" type="image/png">
+</head>
+<body>
+<div id="firefly-container"></div>
+<input type="file" id="directPahFileInput" accept=".pah,.json" style="display:none;">
+<input type="file" id="publishPahFileInput" accept=".pah,.json" style="display:none;">
+
+<!-- HEADER -->
+<header class="app-header">
+    <div class="brand-section">
+        <div class="brand-logo"><img src="PAH.png" alt="PAH" onerror="this.parentElement.innerHTML='<i class=\'fas fa-shapes\'></i>'"></div>
+        <div class="brand-title-wrap">
+            <h1>PAH STUDIO</h1>
+            <div class="brand-subtitle">Pixel Art &amp; Animation</div>
+        </div>
+    </div>
+    <div class="header-actions">
+        <input type="text" id="projectTitleInput" class="project-title-input editor-only-feature" value="Nowy Projekt" title="Nazwa projektu">
+        <button class="pixel-btn btn-success btn-sm editor-only-feature" id="btnHeaderDownloadPah" title="Pobierz plik .pah na dysk"><i class="fas fa-file-arrow-down"></i> Pobierz .PAH</button>
+        <button class="pixel-btn btn-sm editor-only-feature" id="btnHeaderUploadPah" title="Otwórz plik .pah z dysku"><i class="fas fa-file-arrow-up"></i> Wczytaj .PAH</button>
+        <button class="pixel-btn btn-sm btn-primary editor-only-feature" id="exportModalBtn"><i class="fas fa-file-export"></i> Eksport</button>
+        <div id="userProfileBadge" class="user-badge" title="Profil / Logowanie"><i class="fas fa-user"></i> <span>Gość (Zaloguj)</span></div>
+        <label class="theme-toggle" title="Motyw jasny/ciemny">
+            <input type="checkbox" id="themeCheckbox">
+            <div class="track"><i class="fas fa-sun"></i><i class="fas fa-moon"></i></div>
+        </label>
+    </div>
+</header>
+
+<!-- APP CONTAINER -->
+<div class="app-container">
+    <!-- NAV TABS -->
+    <nav class="nav-tab-bar">
+        <div class="tab-group">
+            <button class="nav-tab active" data-view="studio"><i class="fas fa-paint-brush"></i> Edytor</button>
+            <button class="nav-tab user-only-feature" data-view="library" style="display:none;"><i class="fas fa-th-large"></i> Biblioteka</button>
+            <button class="nav-tab" data-view="community"><i class="fas fa-globe"></i> Społeczność</button>
+            <button class="nav-tab user-only-feature" data-view="profile" style="display:none;"><i class="fas fa-user-circle"></i> Profil</button>
+        </div>
+        <div class="tab-actions">
+            <button class="pixel-btn btn-sm btn-primary editor-only-feature" id="newProjectBtn"><i class="fas fa-file-circle-plus"></i> Nowa plansza</button>
+            <button class="pixel-btn btn-sm editor-only-feature" id="cleanCanvasBtn" title="Wyczyść planszę"><i class="fas fa-rotate-left"></i> Wyczyść</button>
+        </div>
+    </nav>
+
+    <!-- ===== STUDIO VIEW ===== -->
+    <section class="view-panel active" id="studioView">
+        <div class="studio-layout">
+
+            <!-- TOOLS PANEL -->
+            <aside class="tools-panel" id="toolsPanel">
+                <button class="tool-btn" data-tool="select" title="Zaznaczanie (M)" data-tooltip="Zaznaczanie (M)"><i class="fas fa-vector-square"></i></button>
+                <button class="tool-btn" data-tool="move" title="Przesuwanie (V)" data-tooltip="Przesuwanie (V)"><i class="fas fa-arrows-alt"></i></button>
+                <div class="tool-group-sep"></div>
+                <button class="tool-btn active" data-tool="pencil" title="Ołówek (B)" data-tooltip="Ołówek (B)"><i class="fas fa-pencil-alt"></i></button>
+                <button class="tool-btn" data-tool="eraser" title="Gumka (E)" data-tooltip="Gumka (E)"><i class="fas fa-eraser"></i></button>
+                <button class="tool-btn" data-tool="bucket" title="Wypełnienie (G)" data-tooltip="Wypełnienie (G)"><i class="fas fa-fill-drip"></i></button>
+                <button class="tool-btn" data-tool="eyedropper" title="Pipeta (I)" data-tooltip="Pipeta (I)"><i class="fas fa-eye-dropper"></i></button>
+                <button class="tool-btn" data-tool="spray" title="Spray (S)" data-tooltip="Spray (S)"><i class="fas fa-spray-can"></i></button>
+                <button class="tool-btn" data-tool="replace" title="Zastąp kolor (Q)" data-tooltip="Zastąp kolor (Q)"><i class="fas fa-exchange-alt"></i></button>
+                <div class="tool-group-sep"></div>
+                <button class="tool-btn" data-tool="line" title="Linia (L)" data-tooltip="Linia (L)"><i class="fas fa-slash"></i></button>
+                <button class="tool-btn" data-tool="rect" title="Prostokąt (U)" data-tooltip="Prostokąt (U)"><i class="far fa-square"></i></button>
+                <button class="tool-btn" data-tool="circle" title="Okrąg (C)" data-tooltip="Okrąg (C)"><i class="far fa-circle"></i></button>
+                <button class="tool-btn" data-tool="shader" title="Cieniowanie (K)" data-tooltip="Cieniowanie (K)"><i class="fas fa-adjust"></i></button>
+                <div class="tool-group-sep"></div>
+                <button class="tool-btn active" id="gridToggleBtn" title="Siatka pikseli" data-tooltip="Siatka pikseli"><i class="fas fa-border-all"></i></button>
+                <button class="tool-btn" id="symmetryXBtn" title="Symetria X (pozioma)" data-tooltip="Symetria X (pozioma)"><i class="fas fa-arrows-left-right"></i></button>
+                <button class="tool-btn" id="symmetryYBtn" title="Symetria Y (pionowa)" data-tooltip="Symetria Y (pionowa)"><i class="fas fa-arrows-up-down"></i></button>
+                <div class="tool-group-sep"></div>
+                <button class="tool-btn" id="undoBtn" title="Cofnij (Ctrl+Z)" data-tooltip="Cofnij (Ctrl+Z)"><i class="fas fa-undo"></i></button>
+                <button class="tool-btn" id="redoBtn" title="Ponów (Ctrl+Y)" data-tooltip="Ponów (Ctrl+Y)"><i class="fas fa-redo"></i></button>
+            </aside>
+
+            <!-- CANVAS VIEWPORT -->
+            <main class="canvas-viewport" id="canvasViewport">
+                <div class="viewport-float">
+                    <button class="pixel-btn btn-sm btn-icon" id="zoomInBtn" title="Powiększ (+)"><i class="fas fa-plus"></i></button>
+                    <button class="pixel-btn btn-sm btn-icon" id="zoomOutBtn" title="Pomniejsz (-)"><i class="fas fa-minus"></i></button>
+                    <button class="pixel-btn btn-sm btn-icon" id="centerCanvasBtn" title="Wyśrodkuj widok"><i class="fas fa-compress-arrows-alt"></i></button>
+                    <div class="coord-display" id="canvasCoords">X:0 Y:0</div>
+                    <div class="coord-display" id="currentSizeDisplay">16x16</div>
+                </div>
+                <div class="canvas-scroll-area" id="canvasScrollArea">
+                    <div class="canvas-wrapper" id="canvasWrapper">
+                        <canvas id="onionCanvas" width="16" height="16"></canvas>
+                        <canvas id="pixelCanvas" width="16" height="16"></canvas>
+                        <canvas id="gridCanvas" width="16" height="16"></canvas>
+                        <canvas id="previewCanvas" width="16" height="16"></canvas>
+                        <canvas id="selectionCanvas" width="16" height="16"></canvas>
+                    </div>
+                </div>
+            </main>
+
+            <!-- TIMELINE -->
+            <footer class="timeline-panel">
+                <div class="timeline-header">
+                    <div class="timeline-controls">
+                        <button class="pixel-btn btn-sm btn-icon btn-primary" id="stepBackBtn" title="Poprzednia klatka"><i class="fas fa-step-backward"></i></button>
+                        <button class="pixel-btn btn-sm btn-icon btn-primary" id="playAnimationBtn" title="Odtwórz / Pauza (Spacja)"><i class="fas fa-play"></i></button>
+                        <button class="pixel-btn btn-sm btn-icon btn-primary" id="stepForwardBtn" title="Następna klatka"><i class="fas fa-step-forward"></i></button>
+                        <div class="fps-control">
+                            FPS:<strong id="fpsValueDisplay">8</strong>
+                            <input type="range" id="fpsRangeInput" min="1" max="30" value="8">
+                        </div>
+                        <label class="fps-control onion-control" title="Skórka cebuli (Onion Skin): wyświetla przezroczysty duch poprzedniej klatki, ułatwiając tworzenie płynnych animacji.">
+                            <input type="checkbox" id="onionSkinToggle">
+                            <span><i class="fas fa-layer-group"></i> Cebula <i class="fas fa-info-circle tooltip-hint"></i></span>
+                        </label>
+                    </div>
+                    <div class="timeline-controls">
+                        <button class="pixel-btn btn-sm btn-primary" id="addNewFrameBtn"><i class="fas fa-plus"></i> Nowa klatka</button>
+                        <button class="pixel-btn btn-sm" id="duplicateFrameBtn" title="Duplikuj klatkę"><i class="fas fa-clone"></i></button>
+                        <button class="pixel-btn btn-sm btn-danger" id="deleteFrameBtn" title="Usuń klatkę"><i class="fas fa-trash-alt"></i></button>
+                    </div>
+                </div>
+                <div class="frames-strip" id="framesStrip"></div>
+            </footer>
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar-panel">
+                <!-- Live Preview -->
+                <div class="panel-card">
+                    <div class="panel-title"><span><i class="fas fa-play-circle"></i> Podgląd animacji</span></div>
+                    <div class="live-preview-box">
+                        <div class="preview-canvas-wrap"><canvas id="livePreviewCanvas" width="16" height="16"></canvas></div>
+                    </div>
+                </div>
+
+                <!-- Color / RGB -->
+                <div class="panel-card">
+                    <div class="panel-title">
+                        <span><i class="fas fa-palette"></i> Kolor &amp; RGB</span>
+                        <button class="pixel-btn btn-sm" id="addSwatchBtn" title="Dodaj do palety">+</button>
+                    </div>
+                    <div class="color-picker-section">
+                        <div class="color-row">
+                            <div class="current-color-box" id="currentColorBox" style="background:#1b4d3e;">
+                                <input type="color" id="colorPickerInput" value="#1b4d3e">
+                            </div>
+                            <input type="text" id="colorHexInput" class="color-hex-input" value="#1b4d3e" maxlength="9">
+                        </div>
+                        <!-- RGB Sliders -->
+                        <div class="rgb-slider-row"><label style="color:#e74c3c;">R</label><input type="range" id="rgbRSlider" min="0" max="255" value="27"><span id="rgbRVal" class="rgb-val">27</span></div>
+                        <div class="rgb-slider-row"><label style="color:#2ecc71;">G</label><input type="range" id="rgbGSlider" min="0" max="255" value="77"><span id="rgbGVal" class="rgb-val">77</span></div>
+                        <div class="rgb-slider-row"><label style="color:#3498db;">B</label><input type="range" id="rgbBSlider" min="0" max="255" value="62"><span id="rgbBVal" class="rgb-val">62</span></div>
+                    </div>
+
+                    <select id="presetPaletteSelect" class="preset-palette-select" style="margin-top:6px;">
+                        <option value="hnato_forest">Leśna Hnato</option>
+                        <option value="gameboy">Game Boy (4 kol.)</option>
+                        <option value="pico8">PICO-8 (16 kol.)</option>
+                        <option value="cyberpunk">Cyberpunk Neon</option>
+                        <option value="grayscale">Skala Szarości</option>
+                    </select>
+                    <div class="palette-grid" id="paletteSwatchesGrid"></div>
+                </div>
+
+                <!-- Tool Specific Settings Panel (Dynamic per tool) -->
+                <div class="panel-card" id="toolSettingsPanel">
+                    <div class="panel-title"><span id="activeToolName"><i class="fas fa-sliders-h"></i> Ustawienia: Ołówek</span></div>
+                    
+                    <!-- 1. Pencil Settings -->
+                    <div class="tool-settings-group" id="settings_pencil">
+                        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+                            <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+                                <span class="setting-label">Rozmiar pędzla:</span>
+                                <div style="display:flex;align-items:center;gap:4px;">
+                                    <input type="number" id="penSizeSelect" class="form-input" value="1" min="1" max="512" step="1" style="width:60px;padding:2px 4px;">
+                                    <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                                </div>
+                            </div>
+                            <input type="range" id="penSizeSlider" min="1" max="512" value="1" style="width:100%;cursor:pointer;">
+                            <div class="brush-presets-grid" id="brushPresetsGrid">
+                                <button class="brush-preset-btn active" data-size="1">1</button>
+                                <button class="brush-preset-btn" data-size="2">2</button>
+                                <button class="brush-preset-btn" data-size="4">4</button>
+                                <button class="brush-preset-btn" data-size="8">8</button>
+                                <button class="brush-preset-btn" data-size="16">16</button>
+                                <button class="brush-preset-btn" data-size="32">32</button>
+                                <button class="brush-preset-btn" data-size="64">64</button>
+                                <button class="brush-preset-btn" data-size="128">128</button>
+                                <button class="brush-preset-btn" data-size="256">256</button>
+                                <button class="brush-preset-btn" data-size="512">512</button>
+                            </div>
+                        </div>
+                        <div class="setting-row" style="margin-top:6px;">
+                            <span class="setting-label">Kształt pędzla:</span>
+                            <select id="pencilShapeSelect" class="form-input" style="width:100px;">
+                                <option value="square">Kwadrat</option>
+                                <option value="circle">Okrągły</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 2. Eraser Settings -->
+                    <div class="tool-settings-group" id="settings_eraser" style="display:none;">
+                        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+                            <div style="display:flex;justify-content:space-between;width:100%;align-items:center;">
+                                <span class="setting-label">Rozmiar gumki:</span>
+                                <div style="display:flex;align-items:center;gap:4px;">
+                                    <input type="number" id="eraserSizeSelect" class="form-input" value="1" min="1" max="512" step="1" style="width:60px;padding:2px 4px;">
+                                    <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                                </div>
+                            </div>
+                            <input type="range" id="eraserSizeSlider" min="1" max="512" value="1" style="width:100%;cursor:pointer;">
+                            <div class="brush-presets-grid" id="eraserPresetsGrid">
+                                <button class="brush-preset-btn active" data-size="1">1</button>
+                                <button class="brush-preset-btn" data-size="2">2</button>
+                                <button class="brush-preset-btn" data-size="4">4</button>
+                                <button class="brush-preset-btn" data-size="8">8</button>
+                                <button class="brush-preset-btn" data-size="16">16</button>
+                                <button class="brush-preset-btn" data-size="32">32</button>
+                                <button class="brush-preset-btn" data-size="64">64</button>
+                                <button class="brush-preset-btn" data-size="128">128</button>
+                                <button class="brush-preset-btn" data-size="256">256</button>
+                                <button class="brush-preset-btn" data-size="512">512</button>
+                            </div>
+                        </div>
+                        <div class="setting-row" style="margin-top:6px;">
+                            <span class="setting-label">Kształt gumki:</span>
+                            <select id="eraserShapeSelect" class="form-input" style="width:100px;">
+                                <option value="square">Kwadrat</option>
+                                <option value="circle">Okrągły</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 3. Spray Settings -->
+                    <div class="tool-settings-group" id="settings_spray" style="display:none;">
+                        <div class="setting-row">
+                            <span class="setting-label">Promień obszaru:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="sprayRadiusInput" class="form-input" value="8" min="2" max="128" style="width:55px;">
+                                <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                            </div>
+                        </div>
+                        <input type="range" id="sprayRadiusSlider" min="2" max="128" value="8" style="width:100%;cursor:pointer;margin-bottom:6px;">
+                        
+                        <div class="setting-row">
+                            <span class="setting-label">Gęstość natrysku:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="sprayDensityInput" class="form-input" value="6" min="1" max="50" style="width:55px;">
+                            </div>
+                        </div>
+                        <input type="range" id="sprayDensitySlider" min="1" max="50" value="6" style="width:100%;cursor:pointer;">
+                    </div>
+
+                    <!-- 4. Line Settings -->
+                    <div class="tool-settings-group" id="settings_line" style="display:none;">
+                        <div class="setting-row">
+                            <span class="setting-label">Grubość linii:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="lineWidthInput" class="form-input" value="1" min="1" max="64" style="width:55px;">
+                                <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                            </div>
+                        </div>
+                        <input type="range" id="lineWidthSlider" min="1" max="64" value="1" style="width:100%;cursor:pointer;margin-bottom:6px;">
+                        <div class="setting-row">
+                            <span class="setting-label">Zakończenie:</span>
+                            <select id="lineCapSelect" class="form-input" style="width:100px;">
+                                <option value="square">Kwadrat</option>
+                                <option value="round">Okrągłe</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 5. Rect Settings -->
+                    <div class="tool-settings-group" id="settings_rect" style="display:none;">
+                        <div class="setting-row">
+                            <span class="setting-label">Tryb figury:</span>
+                            <select id="rectFillSelect" class="form-input" style="width:110px;">
+                                <option value="stroke">Tylko ramka</option>
+                                <option value="fill">Wypełniony</option>
+                            </select>
+                        </div>
+                        <div class="setting-row" id="rectBorderRow" style="margin-top:6px;">
+                            <span class="setting-label">Grubość ramki:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="rectBorderInput" class="form-input" value="1" min="1" max="32" style="width:55px;">
+                                <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 6. Circle Settings -->
+                    <div class="tool-settings-group" id="settings_circle" style="display:none;">
+                        <div class="setting-row">
+                            <span class="setting-label">Tryb okręgu:</span>
+                            <select id="circleFillSelect" class="form-input" style="width:110px;">
+                                <option value="stroke">Tylko obwódka</option>
+                                <option value="fill">Wypełniony</option>
+                            </select>
+                        </div>
+                        <div class="setting-row" id="circleBorderRow" style="margin-top:6px;">
+                            <span class="setting-label">Grubość obrysu:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="circleBorderInput" class="form-input" value="1" min="1" max="32" style="width:55px;">
+                                <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 7. Shader Settings -->
+                    <div class="tool-settings-group" id="settings_shader" style="display:none;">
+                        <div class="setting-row">
+                            <span class="setting-label">Efekt cieniowania:</span>
+                            <select id="shaderModeSelect" class="form-input" style="width:130px;">
+                                <option value="lighten">Rozjaśnianie (+)</option>
+                                <option value="darken">Przyciemnianie (-)</option>
+                                <option value="saturate">Zwiększ nasycenie</option>
+                                <option value="desaturate">Odbarwienie (BW)</option>
+                            </select>
+                        </div>
+                        <div class="setting-row" style="margin-top:6px;flex-direction:column;align-items:flex-start;gap:4px;">
+                            <div style="display:flex;justify-content:space-between;width:100%;">
+                                <span class="setting-label">Siła cieniowania:</span>
+                                <span id="shaderStrengthDisplay" style="font-size:0.9rem;font-weight:bold;color:var(--primary);">15%</span>
+                            </div>
+                            <input type="range" id="shaderStrengthSlider" min="2" max="50" value="15" style="width:100%;cursor:pointer;">
+                        </div>
+                        <div class="setting-row" style="margin-top:6px;">
+                            <span class="setting-label">Rozmiar pędzla:</span>
+                            <div style="display:flex;align-items:center;gap:4px;">
+                                <input type="number" id="shaderSizeInput" class="form-input" value="1" min="1" max="64" style="width:55px;">
+                                <span style="font-size:0.85rem;color:var(--text2);">px</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 8. Move / Select Info -->
+                    <div class="tool-settings-group" id="settings_move" style="display:none;">
+                        <p style="font-size:0.9rem;color:var(--text2);line-height:1.4;">
+                            <i class="fas fa-arrows-alt" style="color:var(--secondary);"></i> <strong>Przesuwanie:</strong><br>
+                            Przeciągnij myszą po planszy, aby natychmiast przesunąć zawartość klatki. Jeśli masz aktywne zaznaczenie (M), przesuniesz tylko zaznaczony obszar.
+                        </p>
+                    </div>
+
+                    <div class="tool-settings-group" id="settings_select" style="display:none;">
+                        <p style="font-size:0.9rem;color:var(--text2);line-height:1.4;">
+                            <i class="fas fa-vector-square" style="color:var(--primary);"></i> <strong>Zaznaczanie:</strong><br>
+                            Zaznacz obszar prostokątem. Skróty: <strong>Ctrl+C</strong> (kopiuj), <strong>Ctrl+X</strong> (wytnij), <strong>Ctrl+V</strong> (wklej), <strong>Delete</strong> (usuń), <strong>Esc</strong> (odznacz).
+                        </p>
+                    </div>
+
+                    <!-- Grid Dimensions -->
+                    <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:8px;">
+                        <div class="setting-row" style="align-items:flex-start;flex-direction:column;gap:4px;">
+                            <span class="setting-label">Wymiary planszy (px):</span>
+                            <div style="display:flex;gap:4px;align-items:center;">
+                                <input type="number" id="gridSizeW" class="form-input" value="16" min="2" max="256" style="width:50px;font-size:0.85rem;padding:2px 4px;">
+                                <span style="font-size:0.8rem;">x</span>
+                                <input type="number" id="gridSizeH" class="form-input" value="16" min="2" max="256" style="width:50px;font-size:0.85rem;padding:2px 4px;">
+                                <button class="pixel-btn btn-sm btn-primary" id="applyGridSizeBtn">Zmień</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transformations -->
+                <div class="panel-card">
+                    <div class="panel-title"><span><i class="fas fa-sync-alt"></i> Narzędzia klatki</span></div>
+                    <div class="action-buttons-grid">
+                        <button class="pixel-btn btn-sm" id="flipHBtn"><i class="fas fa-arrows-alt-h"></i> Odbij X</button>
+                        <button class="pixel-btn btn-sm" id="flipVBtn"><i class="fas fa-arrows-alt-v"></i> Odbij Y</button>
+                        <button class="pixel-btn btn-sm btn-accent" id="invertColorsBtn"><i class="fas fa-adjust"></i> Negatyw</button>
+                        <button class="pixel-btn btn-sm btn-danger" id="clearFrameBtn"><i class="fas fa-eraser"></i> Wyczyść</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </section>
+
+    <!-- ===== LIBRARY VIEW ===== -->
+    <section class="view-panel" id="libraryView">
+        <div class="library-layout">
+            <div class="library-header">
+                <div class="library-title"><h2><i class="fas fa-box-archive"></i> Moje Projekty</h2></div>
+                <div class="library-filters">
+                    <input type="text" id="librarySearchInput" class="search-input" placeholder="Szukaj...">
+                    <button class="filter-btn active" data-filter="all">Wszystkie</button>
+                    <button class="filter-btn" data-filter="local">Lokalne</button>
+                    <button class="filter-btn" data-filter="templates">Wzorce</button>
+                    <button class="pixel-btn btn-sm btn-success" id="libraryPublishBtn"><i class="fas fa-cloud-arrow-up"></i> Publikuj</button>
+                </div>
+            </div>
+            <div class="library-grid" id="libraryProjectsGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== COMMUNITY VIEW ===== -->
+    <section class="view-panel" id="communityView">
+        <div class="library-layout">
+            <div class="library-header">
+                <div class="library-title">
+                    <h2><i class="fas fa-globe"></i> Społeczność PAH</h2>
+                    <p style="font-size:1rem;color:var(--text2);margin-top:3px;">Pobieraj i przeglądaj prace społeczności</p>
+                </div>
+                <div class="library-filters">
+                    <input type="text" id="communitySearchInput" class="search-input" placeholder="Szukaj w społeczności...">
+                    <button class="pixel-btn btn-sm btn-success" id="publishBtn"><i class="fas fa-cloud-arrow-up"></i> Opublikuj projekt</button>
+                </div>
+            </div>
+            <div class="library-grid" id="communityProjectsGrid"></div>
+        </div>
+    </section>
+
+    <!-- ===== PROFILE VIEW ===== -->
+    <section class="view-panel" id="profileView">
+        <div class="profile-layout">
+            
+            <!-- User Logged In Card -->
+            <div class="profile-header-card user-only-feature" style="display:none;" id="profileHeaderCard">
+                <div class="profile-avatar" id="profileAvatarDisplay"><i class="fas fa-user" style="color:#ffd700;"></i></div>
+                <div class="profile-details">
+                    <h2 id="profileNameDisplay">Użytkownik</h2>
+                    <p class="bio" id="profileBioDisplay">Brak opisu...</p>
+                    <div class="profile-stats">
+                        <span id="profileProjectCount">0 projektów</span>
+                    </div>
+                </div>
+                <div style="display:flex;gap:8px;flex-direction:column;">
+                    <button class="pixel-btn btn-sm btn-primary" id="editProfileToggleBtn"><i class="fas fa-edit"></i> Edytuj profil</button>
+                    <button class="pixel-btn btn-sm btn-danger" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Wyloguj</button>
+                </div>
+            </div>
+
+            <!-- Profile Edit Section (Logged-in only) -->
+            <div class="profile-edit-section user-only-feature" id="profileEditSection" style="display:none;">
+                <div class="panel-title"><span><i class="fas fa-user-edit"></i> Edycja Profilu</span></div>
+                <div class="form-group" style="margin-top:8px;">
+                    <label>Awatar:</label>
+                    <div class="avatar-picker" id="avatarPickerGrid"></div>
+                    <div style="display:flex;align-items:center;gap:8px;margin-top:6px;">
+                        <label style="font-family:var(--font-h);font-size:0.55rem;">Kolor awataru:</label>
+                        <input type="color" id="profileColorInput" value="#ffd700" style="width:32px;height:28px;border:1px solid var(--border);cursor:pointer;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Bio / Opis:</label>
+                    <textarea id="profileBioInput" class="form-textarea" style="min-height:60px;" placeholder="Napisz coś o sobie..."></textarea>
+                </div>
+                <div class="form-group" style="margin-top:6px;">
+                    <label class="checkbox-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+                        <input type="checkbox" id="profileFeaturedToggle" checked>
+                        <span>Włącz sekcję "Najlepsze prace" w moim profilu</span>
+                    </label>
+                </div>
+                <button class="pixel-btn btn-success" id="saveProfileBtn"><i class="fas fa-check"></i> Zapisz profil</button>
+            </div>
+
+            <!-- User's Saved Projects (Logged-in only) -->
+            <div class="user-only-feature" id="profileProjectsSection" style="display:none;">
+                <div class="panel-title" style="margin-bottom:10px;"><span><i class="fas fa-folder-open"></i> Projekty na Twoim koncie</span></div>
+                <div class="library-grid" id="profileProjectsGrid"></div>
+            </div>
+
+            <div class="user-only-feature" id="profileFeaturedSection" style="display:none;">
+                <div class="panel-title" style="margin-bottom:10px;"><span><i class="fas fa-star"></i> Najlepsze prace</span></div>
+                <p style="color:var(--text2);margin-bottom:10px;">Oznaczaj swoje projekty gwiazdką, aby wyróżnić je w swoim profilu.</p>
+                <div class="library-grid" id="profileFeaturedGrid"></div>
+            </div>
+
+            <!-- Guest Prompt (Shown when not logged in) -->
+            <div id="profileGuestPrompt" class="guest-only-feature" style="text-align:center;padding:40px 20px;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow);">
+                <i class="fas fa-user-lock" style="font-size:3rem;margin-bottom:16px;display:block;color:var(--secondary);"></i>
+                <h2 style="font-family:var(--font-h);font-size:1rem;margin-bottom:10px;">Jesteś w trybie gościa</h2>
+                <p style="margin-bottom:16px;color:var(--text2);max-width:480px;margin-left:auto;margin-right:auto;">W trybie gościa możesz swobodnie rysować, tworzyć animacje i pobierać pliki na dysk. Aby spersonalizować swój profil, zapisywać w bibliotece konta i publikować w społeczności, zaloguj się lub załóż darmowe konto.</p>
+                <button class="pixel-btn btn-primary" id="profileLoginBtn"><i class="fas fa-sign-in-alt"></i> Zaloguj / Utwórz konto</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- ====================== MODALS ====================== -->
+
+<!-- New Project -->
+<div class="modal-backdrop" id="newProjectModal">
+    <div class="modal-box">
+        <div class="modal-header"><h2><i class="fas fa-file-circle-plus"></i> Nowa plansza</h2><button class="close-modal-btn">&times;</button></div>
+        <form id="createProjectForm">
+            <div class="form-group"><label>Nazwa projektu:</label><input type="text" id="newProjectName" class="form-input" value="Nowy Projekt" required></div>
+            <div class="form-group" style="display:flex;gap:10px;">
+                <div style="flex:1;"><label>Szerokość (px):</label><input type="number" id="newProjectWidth" class="form-input" value="16" min="2" max="256"></div>
+                <div style="flex:1;"><label>Wysokość (px):</label><input type="number" id="newProjectHeight" class="form-input" value="16" min="2" max="256"></div>
+            </div>
+            <div class="form-group"><label>FPS (tempo animacji):</label><input type="number" id="newProjectFps" class="form-input" value="8" min="1" max="30"></div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                <button type="button" class="pixel-btn close-modal-btn">Anuluj</button>
+                <button type="submit" class="pixel-btn btn-success"><i class="fas fa-check"></i> Utwórz</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Export -->
+<div class="modal-backdrop" id="exportModal">
+    <div class="modal-box">
+        <div class="modal-header"><h2><i class="fas fa-file-export"></i> Eksport &amp; Zapis</h2><button class="close-modal-btn">&times;</button></div>
+        <div class="form-group">
+            <label>Skalowanie eksportu (rozdzielczość):</label>
+            <select id="exportScaleSelect" class="form-input">
+                <option value="1">1x (piksel w piksel)</option>
+                <option value="4">4x</option>
+                <option value="8" selected>8x (zalecane)</option>
+                <option value="16">16x (HD)</option>
+                <option value="32">32x</option>
+            </select>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;">
+            <button class="pixel-btn btn-success" id="btnExportPublish"><i class="fas fa-globe"></i> Publikuj w Społeczności</button>
+            <button class="pixel-btn" id="btnExportPahFile"><i class="fas fa-file-arrow-down"></i> Pobierz plik projektu (.pah)</button>
+            <button class="pixel-btn" id="btnExportPngFrame"><i class="fas fa-image"></i> Bieżąca klatka (.png)</button>
+            <button class="pixel-btn btn-accent" id="btnExportSpriteSheet"><i class="fas fa-table-cells-large"></i> Arkusz klatek / Sprite Sheet (.png)</button>
+            <button class="pixel-btn btn-primary" id="btnExportGif"><i class="fas fa-film"></i> Animacja (.gif)</button>
+            <button class="pixel-btn user-only-feature" id="saveToAccountBtn" style="display:none;"><i class="fas fa-cloud-arrow-up"></i> Zapisz do biblioteki konta</button>
+        </div>
+    </div>
+</div>
+
+<!-- Auth (Login / Register Separated) -->
+<div class="modal-backdrop" id="authModal">
+    <div class="modal-box" style="max-width:440px;">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-circle"></i> Konto Użytkownika</h2>
+            <button class="close-modal-btn">&times;</button>
+        </div>
+        
+        <div class="auth-tabs">
+            <button type="button" class="auth-tab-btn active" id="tabBtnLogin"><i class="fas fa-sign-in-alt"></i> Logowanie</button>
+            <button type="button" class="auth-tab-btn" id="tabBtnRegister"><i class="fas fa-user-plus"></i> Rejestracja</button>
+        </div>
+
+        <!-- Login Section -->
+        <div id="authLoginSection" class="auth-section">
+            <p style="font-size:0.95rem;color:var(--text2);margin-bottom:12px;">Zaloguj się, aby publikować w społeczności, polubiać prace, komentować i zapisywać projekty w bazie danych.</p>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Nazwa użytkownika:</label>
+                    <input type="text" id="loginUsername" class="form-input" placeholder="Wpisz login..." required autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Hasło:</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Wpisz hasło..." required autocomplete="current-password">
+                        <button type="button" class="btn-toggle-pw" data-target="loginPassword" title="Pokaż / Ukryj hasło"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="pixel-btn btn-primary" style="width:100%;margin-top:10px;"><i class="fas fa-sign-in-alt"></i> Zaloguj się</button>
+            </form>
+            <p class="auth-switch-prompt">Nie masz jeszcze konta? <a href="#" id="linkSwitchToRegister">Zarejestruj się tutaj</a></p>
+        </div>
+
+        <!-- Register Section -->
+        <div id="authRegisterSection" class="auth-section" style="display:none;">
+            <p style="font-size:0.95rem;color:var(--text2);margin-bottom:12px;">Utwórz darmowe konto, aby zyskać własny profil, awatar i publikować prace.</p>
+            <form id="registerForm">
+                <div class="form-group">
+                    <label>Nazwa użytkownika (min. 3 znaki):</label>
+                    <input type="text" id="registerUsername" class="form-input" placeholder="Wybierz login..." required minlength="3" autocomplete="username">
+                </div>
+                <div class="form-group">
+                    <label>Hasło (min. 3 znaki):</label>
+                    <div class="password-input-wrap">
+                        <input type="password" id="registerPassword" class="form-input" placeholder="Wpisz bezpieczne hasło..." required minlength="3" autocomplete="new-password">
+                        <button type="button" class="btn-toggle-pw" data-target="registerPassword" title="Pokaż / Ukryj hasło"><i class="fas fa-eye"></i></button>
+                    </div>
+                </div>
+                <button type="submit" class="pixel-btn btn-success" style="width:100%;margin-top:10px;"><i class="fas fa-user-plus"></i> Utwórz nowe konto</button>
+            </form>
+            <p class="auth-switch-prompt">Masz już konto? <a href="#" id="linkSwitchToLogin">Zaloguj się tutaj</a></p>
+        </div>
+    </div>
+</div>
+
+<!-- Publish to Community -->
+<div class="modal-backdrop" id="publishModal">
+    <div class="modal-box">
+        <div class="modal-header"><h2><i class="fas fa-cloud-arrow-up"></i> Publikuj w Społeczności</h2><button class="close-modal-btn">&times;</button></div>
+        <div class="form-group">
+            <label>Źródło projektu:</label>
+            <select id="publishSourceSelect" class="form-input">
+                <option value="current">Bieżący projekt z edytora</option>
+            </select>
+        </div>
+        <div class="form-group" id="publishFileGroup" style="display:none;">
+            <label>Wybierz plik .pah:</label>
+            <button class="pixel-btn btn-sm" id="publishSelectFileBtn"><i class="fas fa-file-arrow-up"></i> Wybierz plik .pah</button>
+            <span id="publishFileName" style="font-size:0.85rem;color:var(--text2);margin-left:8px;"></span>
+        </div>
+        <div class="form-group"><label>Opis pracy:</label><textarea id="publishDesc" class="form-textarea" style="min-height:80px;" placeholder="Napisz krótki opis..."></textarea></div>
+        <div class="form-group"><label>Tagi (oddzielone przecinkami):</label><input type="text" id="publishTags" class="form-input" value="pixelart, animacja"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+            <button class="pixel-btn close-modal-btn">Anuluj</button>
+            <button class="pixel-btn btn-success" id="publishCommunityBtn"><i class="fas fa-globe"></i> Opublikuj</button>
+        </div>
+    </div>
+</div>
+
+<!-- Community Project Modal (Left: Preview 256x256, Right: Comments, Likes, Meta, Save to Library) -->
+<div class="modal-backdrop" id="communityProjectModal">
+    <div class="modal-box modal-box-wide">
+        <div class="modal-header">
+            <h2><i class="fas fa-globe"></i> Praca społeczności</h2>
+            <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="community-project-layout">
+            <div class="community-project-preview">
+                <div class="community-project-canvas-wrap">
+                    <canvas id="communityProjectPreviewCanvas" width="16" height="16"></canvas>
+                </div>
+            </div>
+            <div class="community-project-sidebar">
+                <div class="community-project-head">
+                    <h3 id="communityProjectTitle">Projekt</h3>
+                    <button class="pixel-btn btn-sm" id="communityProjectAuthorBtn"><i class="fas fa-user"></i> <span>Autor</span></button>
+                </div>
+                <div class="community-project-meta" id="communityProjectMeta"></div>
+                <p class="community-project-desc" id="communityProjectDesc">Brak opisu.</p>
+                <div class="project-tags" id="communityProjectTags"></div>
+                <div class="community-project-actions">
+                    <button class="pixel-btn btn-sm btn-primary" id="communityProjectOpenBtn"><i class="fas fa-paint-brush"></i> Otwórz w edytorze</button>
+                    <button class="pixel-btn btn-sm btn-accent" id="communityProjectSaveBtn" title="Zapisz kopię w swojej bibliotece"><i class="fas fa-bookmark"></i> Zapisz w bibliotece</button>
+                    <button class="pixel-btn btn-sm" id="communityProjectDownloadBtn"><i class="fas fa-download"></i> Pobierz .PAH</button>
+                    <button class="pixel-btn btn-sm btn-success" id="communityProjectLikeBtn"><i class="fas fa-heart"></i> <span>0</span></button>
+                </div>
+                <div class="community-comments-section">
+                    <div class="panel-title" style="margin-bottom:8px;"><span><i class="fas fa-comments"></i> Komentarze</span></div>
+                    
+                    <div id="communityCommentGuestNotice" style="display:none;padding:8px;background:rgba(0,0,0,0.1);border:1px solid var(--border);text-align:center;font-size:0.95rem;color:var(--text2);margin-bottom:10px;">
+                        <i class="fas fa-lock"></i> Tylko zalogowani użytkownicy mogą pisać komentarze.
+                        <button type="button" class="pixel-btn btn-sm btn-primary" id="btnCommentLogin" style="margin-left:6px;"><i class="fas fa-sign-in-alt"></i> Zaloguj się</button>
+                    </div>
+
+                    <div id="communityCommentFormWrap" class="community-comment-form">
+                        <textarea id="communityCommentInput" class="form-textarea" style="min-height:55px;" placeholder="Napisz komentarz..."></textarea>
+                        <button class="pixel-btn btn-success" id="communityCommentSubmitBtn"><i class="fas fa-paper-plane"></i> Dodaj komentarz</button>
+                    </div>
+                    <div id="communityCommentsList" class="community-comments-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Public User Profile Modal -->
+<div class="modal-backdrop" id="publicProfileModal">
+    <div class="modal-box modal-box-wide">
+        <div class="modal-header">
+            <h2><i class="fas fa-user-circle"></i> Profil autora</h2>
+            <button class="close-modal-btn">&times;</button>
+        </div>
+        <div class="profile-layout" style="padding:0;max-height:75vh;overflow-y:auto;">
+            <div class="profile-header-card" id="publicProfileHeaderCard">
+                <div class="profile-avatar" id="publicProfileAvatarDisplay"><i class="fas fa-user" style="color:#ffd700;"></i></div>
+                <div class="profile-details">
+                    <h2 id="publicProfileNameDisplay">Użytkownik</h2>
+                    <p class="bio" id="publicProfileBioDisplay">Brak opisu...</p>
+                    <div class="profile-stats">
+                        <span id="publicProfileProjectCount">0 projektów</span>
+                    </div>
+                </div>
+            </div>
+            <div id="publicProfileFeaturedSection">
+                <div class="panel-title" style="margin-bottom:10px;"><span><i class="fas fa-star"></i> Najlepsze prace</span></div>
+                <div class="library-grid" id="publicProfileFeaturedGrid"></div>
+            </div>
+            <div id="publicProfileProjectsSection">
+                <div class="panel-title" style="margin-bottom:10px;"><span><i class="fas fa-folder-open"></i> Opublikowane prace</span></div>
+                <div class="library-grid" id="publicProfileProjectsGrid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Dialog / Confirm Modal -->
+<div class="modal-backdrop" id="dialogModal">
+    <div class="modal-box" style="max-width:420px;">
+        <div class="modal-header">
+            <h2 id="dialogTitle"><i class="fas fa-circle-info"></i> Informacja</h2>
+            <button class="close-modal-btn">&times;</button>
+        </div>
+        <div id="dialogMessage" style="color:var(--text);margin-bottom:14px;font-size:1.05rem;line-height:1.4;"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px;">
+            <button class="pixel-btn" id="dialogCancelBtn" style="display:none;">Anuluj</button>
+            <button class="pixel-btn btn-primary" id="dialogConfirmBtn">OK</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast-container"></div>
+
+<!-- Scripts -->
+<script src="js/gifencoder.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/animation.js"></script>
+<script src="js/editor.js"></script>
+<script src="js/library.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+C:\Users\user\Music\PAH\Server\out\PAH Studio.pdb
+C:\Users\user\Music\PAH\Server\out\PAH Studio.exe

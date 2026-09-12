@@ -1,0 +1,25 @@
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\rpswa.dswa.cache.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAHServer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAHServer.AssemblyInfoInputs.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAHServer.AssemblyInfo.cs
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAHServer.csproj.CoreCompileInputs.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\rjimswa.dswa.cache.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\scopedcss\scopedcss.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\staticwebassets.build.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\staticwebassets.build.json.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\staticwebassets.development.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\staticwebassets.build.endpoints.json
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\swae.build.ex.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAHServer.genruntimeconfig.cache
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.staticwebassets.endpoints.json
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.exe
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.deps.json
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.runtimeconfig.json
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.dll
+C:\Users\user\Music\PAH\Server\bin\Release\net8.0\PAH Studio.pdb
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAH Studio.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\scopedcss\bundle\PAH Studio.styles.css
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAH Studio.dll
+C:\Users\user\Music\PAH\Server\obj\Release\net8.0\PAH Studio.pdb

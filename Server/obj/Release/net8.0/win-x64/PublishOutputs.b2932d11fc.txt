@@ -1,0 +1,3 @@
+C:\Users\user\Music\PAH_self\PAHServer.pdb
+C:\Users\user\Music\PAH_self\aspnetcorev2_inprocess.dll
+C:\Users\user\Music\PAH_self\PAHServer.exe

@@ -1,0 +1,3 @@
+C:\Users\user\Music\PAH\build_tmp\PAH Studio.pdb
+C:\Users\user\Music\PAH\build_tmp\aspnetcorev2_inprocess.dll
+C:\Users\user\Music\PAH\build_tmp\PAH Studio.exe

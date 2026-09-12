@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationIcon>PAH.ico</ApplicationIcon>
+    <ApplicationTitle>PAH Studio</ApplicationTitle>
+    <AssemblyName>PAH Studio</AssemblyName>
+    <RootNamespace>PAHServer</RootNamespace>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Embed client files so the exe works even with zero external files -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\Client\**\*" Link="EmbeddedClient\%(RecursiveDir)%(Filename)%(Extension)" />
+    <EmbeddedResource Include="PAH.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="8.0.0" />
+  </ItemGroup>
+
+</Project>
